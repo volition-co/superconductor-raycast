@@ -10,16 +10,24 @@ Publish under the Superconductor Raycast organization, with an individual mainta
 
 ## Release readiness
 
-| Check                                                                  | Status                                                       |
-| ---------------------------------------------------------------------- | ------------------------------------------------------------ |
-| Type checks, source lint, formatting, mocked tests, distribution build | Passing locally                                              |
-| Launcher argument, project search, starring, empty-input handling      | Inspected in Raycast                                         |
-| Single-ticket browser handoff and implementation wait                  | Live end-to-end verification pending                         |
-| Repeated successful creations in one project                           | Live end-to-end verification pending                         |
-| Token expiry, request failures, and browser-open failure in Raycast    | Manual verification pending; API errors have mocked coverage |
-| Publisher identity and full `ray lint`                                 | Blocked on confirmed Raycast author and organization handles |
-| Store screenshots and icon in both themes                              | Pending                                                      |
-| Dependency audit                                                       | Upstream advisory remains; see below                         |
+| Check                                                                  | Status                                                          |
+| ---------------------------------------------------------------------- | --------------------------------------------------------------- |
+| Type checks, source lint, formatting, mocked tests, distribution build | Passing locally                                                 |
+| Launcher argument, project search, starring, empty-input handling      | Inspected in Raycast                                            |
+| Single-ticket browser handoff and implementation wait                  | Passed live on November 17, 2026                                |
+| Repeated successful creations in one project                           | Passed live on November 17, 2026                                |
+| Token expiry, request failures, and browser-open failure in Raycast    | Manual verification pending; API errors have mocked coverage    |
+| Publisher identity and full `ray lint`                                 | Blocked on confirmed Raycast author and organization handles    |
+| Store screenshots and icon in both themes                              | One screenshot captured; two views and icon theme check pending |
+| Dependency audit                                                       | Upstream advisory remains; see below                            |
+
+Live checks used three temporary tickets in AOP. The single-ticket command launched
+one default implementation and opened its exact URL in Safari. Multiple-ticket
+mode created two successive tickets with implementation launch disabled, retained
+the project, and cleared the input after each success. A starred project persisted
+between commands. All three tickets were deleted afterward and their absence was
+verified through the API. One Store screenshot is saved in `metadata/`. The launcher and project-picker
+captures remain pending; raw test captures are not publication assets.
 
 ## Before submission
 
