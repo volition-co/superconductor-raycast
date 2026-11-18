@@ -3,7 +3,7 @@
   "name": "superconductor",
   "title": "Superconductor",
   "description": "Create Superconductor tickets and start work with your default coding agent.",
-  "icon": "icon.png",
+  "icon": "superconductor-icon.png",
   "author": "kevingutowski",
   "license": "MIT",
   "platforms": [
@@ -25,7 +25,7 @@
           "name": "description",
           "type": "text",
           "placeholder": "What should we work on?",
-          "required": false
+          "required": true
         }
       ],
       "keywords": [

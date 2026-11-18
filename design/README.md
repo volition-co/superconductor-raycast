@@ -1,20 +1,25 @@
 # Extension icon
 
-`source-icon.svg` is the editable source downloaded from [Superconductor's public favicon](https://www.superconductor.com/favicon.svg). Only `assets/icon.png` is bundled with the extension.
+`assets/superconductor-icon.png` is derived from the 512 × 512 PNG in Superconductor
+for macOS 1.1.0 (`Superconductor.app/Contents/Resources/icon.icns`). The 47-pixel transparent outer margin is trimmed and the resulting 418 × 418
+icon is resized to 512 × 512 for Raycast. Its rounded corners are preserved.
 
-To regenerate the 512 × 512 PNG with librsvg installed, run from the repository root:
+To extract it again from an installed copy:
 
 ```sh
-rsvg-convert -w 512 -h 512 design/source-icon.svg -o assets/icon.png
+iconutil -c iconset /Applications/Superconductor.app/Contents/Resources/icon.icns -o /tmp/superconductor-app.iconset
+magick /tmp/superconductor-app.iconset/icon_512x512.png -trim +repage -resize 512x512 assets/superconductor-icon.png
 ```
 
-Review the icon in Raycast's light and dark themes before release. The Superconductor name and logo remain their owners' trademarks.
+Review the icon in Raycast's light and dark themes before release. The
+Superconductor name and logo remain their owners' trademarks.
 
 ## Store screenshots
 
 The three PNGs in `metadata/` were saved by Raycast's built-in Capture Window
 command at 2000 × 1250 pixels. They show multiple-ticket entry, the starred
-project picker, and launcher input with example Pokémon content.
+project picker, and launcher input with example website tasks. The demo project
+is named Website and has no connected repository.
 
 `screenshot-background.png` is a still rendered from the wave shader on the
 [Superconductor landing page](https://www.superconductor.com/), using its original
