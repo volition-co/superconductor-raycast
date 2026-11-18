@@ -166,3 +166,59 @@ test("rejects foreign result URLs and repeated project cursors", async () => {
   await assert.rejects(repeated.projects(), /finish loading projects/);
   assert.equal(calls, 2);
 });
+
+test("waits for the exact ticket's implementation across pages without repeating creation", async () => {
+  let calls = 0;
+  const url = "https://www.superconductor.com/tickets/new/implementations/impl";
+  const client = createClient(
+    token,
+    (async (input, init) => {
+      assert.equal(init?.method, "GET");
+      const query = new URL(String(input)).searchParams;
+      assert.equal(query.get("include"), "implementations");
+      calls++;
+      if (calls === 1)
+        return Response.json({
+          data: [{ id: "new", implementations: [] }],
+          next_cursor: null,
+        });
+      if (calls === 2)
+        return Response.json({
+          data: [
+            {
+              id: "other",
+              implementations: [
+                { id: "wrong", url: "https://www.superconductor.com/wrong" },
+              ],
+            },
+          ],
+          next_cursor: "next",
+        });
+      assert.equal(query.get("cursor"), "next");
+      return Response.json({
+        data: [{ id: "new", implementations: [{ id: "impl", url }] }],
+        next_cursor: null,
+      });
+    }) as typeof fetch,
+    async () => {},
+  );
+  assert.equal(await client.waitForImplementation("project", "new"), url);
+  assert.equal(calls, 3);
+});
+
+test("stops waiting when no implementation appears", async () => {
+  let calls = 0;
+  const client = createClient(
+    token,
+    (async () => {
+      calls++;
+      return Response.json({
+        data: [{ id: "new", implementations: [] }],
+        next_cursor: null,
+      });
+    }) as typeof fetch,
+    async () => {},
+  );
+  assert.equal(await client.waitForImplementation("project", "new"), undefined);
+  assert.equal(calls, 15);
+});

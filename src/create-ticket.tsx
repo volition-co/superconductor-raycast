@@ -146,9 +146,30 @@ export default function Command(
       return;
     }
 
+    let destination = ticket.url;
+    if (values.launchDefault && launchOutcome(ticket, true) !== "failed") {
+      const toast = await showToast({
+        style: Toast.Style.Animated,
+        title: "Ticket created — waiting for implementation…",
+      });
+      setSending(true);
+      try {
+        destination =
+          (await createClient(apiToken).waitForImplementation(
+            target.id,
+            ticket.id,
+          )) ?? ticket.url;
+      } catch {
+        // Creation succeeded; a lookup failure falls back to the existing ticket.
+      } finally {
+        setSending(false);
+        await toast.hide();
+      }
+    }
+
     // A browser failure must never turn a successful create into a retry.
     try {
-      await open(ticket.url);
+      await open(destination);
       await closeMainWindow({
         clearRootSearch: true,
         popToRootType: PopToRootType.Immediate,

@@ -64,7 +64,12 @@ function statusMessage(status: number): string {
   }
 }
 
-export function createClient(token: string, transport: typeof fetch = fetch) {
+export function createClient(
+  token: string,
+  transport: typeof fetch = fetch,
+  pause = (ms: number) =>
+    new Promise<void>((resolve) => setTimeout(resolve, ms)),
+) {
   if (!/^sc_[\x21-\x7E]+$/.test(token))
     throw new Error(
       "Enter a valid Superconductor personal access token in extension preferences.",
@@ -127,6 +132,58 @@ export function createClient(token: string, transport: typeof fetch = fetch) {
           `${b.workspace.name} ${b.name}`,
         ),
       );
+    },
+
+    async waitForImplementation(
+      projectId: string,
+      ticketId: string,
+    ): Promise<string | undefined> {
+      const signal = AbortSignal.timeout(30000);
+      const schema = z.object({
+        data: z.array(
+          z.object({
+            id,
+            implementations: z.array(z.object({ id, url: appUrl })),
+          }),
+        ),
+        next_cursor: z.string().nullable(),
+      });
+      for (let attempt = 0; attempt < 15; attempt++) {
+        let cursor: string | null = null;
+        const seen = new Set<string>();
+        do {
+          const query = new URLSearchParams({
+            include: "implementations",
+            sort: "created",
+            limit: "100",
+          });
+          if (cursor) query.set("cursor", cursor);
+          const response = await request(
+            `/projects/${id.parse(projectId)}/tickets?${query}`,
+            undefined,
+            signal,
+          );
+          if (response.status !== 200)
+            throw new Error(statusMessage(response.status));
+          const page = schema.parse(await response.json());
+          const ticket = page.data.find((item) => item.id === ticketId);
+          if (ticket) {
+            // Only open an unambiguous implementation belonging to this ticket.
+            if (ticket.implementations.length === 1)
+              return ticket.implementations[0].url;
+            if (ticket.implementations.length > 1) return undefined;
+            break;
+          }
+          cursor = page.next_cursor;
+          if (cursor) {
+            if (seen.has(cursor) || seen.size >= 100) return undefined;
+            seen.add(cursor);
+          }
+        } while (cursor);
+        if (attempt < 14) await pause(2000);
+        signal.throwIfAborted();
+      }
+      return undefined;
     },
 
     async createTicket(input: TicketInput): Promise<CreatedTicket> {

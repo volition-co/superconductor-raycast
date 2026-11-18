@@ -17,7 +17,7 @@ Press **⌘S** on a project to star or unstar it. Starred projects appear first,
 
 Use **⌘E** to edit the ticket before submitting. Use **⌘⇧I** to toggle whether to start the default implementation. Superconductor generates the ticket title from your description.
 
-After creation, the ticket opens automatically in your default browser and Raycast closes. Check the ticket for implementation status. If the connection fails after submission, check the project before trying again—the ticket may already exist.
+After creation, Raycast waits up to 30 seconds for the implementation and opens it in your default browser. If implementation launch is disabled, fails, or takes longer, it opens the ticket instead. Raycast then closes. If the connection fails after submission, check the project before trying again—the ticket may already exist.
 
 ## Create Multiple Tickets
 
