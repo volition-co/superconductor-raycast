@@ -1,0 +1,57 @@
+{
+  "$schema": "https://www.raycast.com/schemas/extension.json",
+  "name": "superconductor",
+  "title": "Superconductor",
+  "description": "Create Superconductor tickets and start work with your default coding agent.",
+  "icon": "icon.png",
+  "author": "kevingutowski",
+  "license": "MIT",
+  "platforms": [
+    "macOS"
+  ],
+  "categories": [
+    "Developer Tools",
+    "Productivity"
+  ],
+  "commands": [
+    {
+      "name": "create-ticket",
+      "title": "Create Ticket",
+      "subtitle": "Superconductor",
+      "description": "Create a ticket in a project and optionally start your default implementation.",
+      "mode": "view"
+    }
+  ],
+  "preferences": [
+    {
+      "name": "apiToken",
+      "title": "Personal Access Token",
+      "description": "Create a token in Superconductor → Account Settings → Developer → Personal access tokens.",
+      "type": "password",
+      "required": true
+    }
+  ],
+  "scripts": {
+    "dev": "ray develop",
+    "build": "ray build -e dist",
+    "lint": "ray lint",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test tests/*.test.ts",
+    "format": "prettier --write .",
+    "publish": "ray publish"
+  },
+  "dependencies": {
+    "@raycast/api": "2.12.1",
+    "react": "19.3.1",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@raycast/eslint-config": "2.2.0",
+    "@types/node": "26.6.5",
+    "@types/react": "19.3.0",
+    "eslint": "^9.39.0",
+    "prettier": "^3.6.2",
+    "tsx": "^4.20.6",
+    "typescript": "~5.9.3"
+  }
+}
