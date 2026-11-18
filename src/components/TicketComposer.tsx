@@ -333,7 +333,7 @@ export default function TicketComposer({
         title={project.name || "Untitled project"}
         subtitle={project.workspace.name}
         keywords={[project.workspace.name]}
-        icon={starred ? Icon.Star : Icon.Folder}
+        icon={starred ? "star-filled.svg" : Icon.Folder}
         actions={
           <ActionPanel>
             <Action
@@ -355,7 +355,7 @@ export default function TicketComposer({
               <>
                 <Action
                   title={starred ? "Unstar Project" : "Star Project"}
-                  icon={starred ? Icon.StarDisabled : Icon.Star}
+                  icon={starred ? Icon.StarDisabled : "star-filled.svg"}
                   shortcut={Keyboard.Shortcut.Common.Save}
                   onAction={() => toggleFavorite(project.id)}
                 />
