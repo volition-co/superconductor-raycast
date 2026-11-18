@@ -19,14 +19,25 @@
       "title": "Create Ticket",
       "subtitle": "Superconductor",
       "description": "Create a ticket in a project and optionally start your default implementation.",
-      "mode": "view"
+      "mode": "view",
+      "arguments": [
+        {
+          "name": "description",
+          "type": "text",
+          "placeholder": "What should we work on?",
+          "required": false
+        }
+      ],
+      "keywords": [
+        "sc"
+      ]
     }
   ],
   "preferences": [
     {
       "name": "apiToken",
       "title": "Personal Access Token",
-      "description": "Create a token in Superconductor → Account Settings → Developer → Personal access tokens.",
+      "description": "Create a token in Superconductor \u2192 Account Settings \u2192 Developer \u2192 Personal access tokens.",
       "type": "password",
       "required": true
     }

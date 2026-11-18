@@ -3,11 +3,15 @@ import {
   ActionPanel,
   Detail,
   Form,
+  List,
   Icon,
+  LocalStorage,
+  LaunchProps,
   getPreferenceValues,
   openExtensionPreferences,
   showToast,
   Toast,
+  Keyboard,
 } from "@raycast/api";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -18,9 +22,10 @@ import {
   UnknownCreateOutcome,
 } from "./api";
 
+import { groupProjects, readFavorites } from "./favorites";
+
 type Values = {
   project: string;
-  title: string;
   description: string;
   launchDefault: boolean;
 };
@@ -28,13 +33,20 @@ type Result =
   | { ticket: CreatedTicket; launchDefault: boolean }
   | { unknown: true; projectUrl: string };
 
-export default function Command() {
+export default function Command(
+  props: LaunchProps<{ arguments: { description?: string } }>,
+) {
   const { apiToken } = getPreferenceValues<{ apiToken: string }>();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string>();
   const [reload, setReload] = useState(0);
-  const [project, setProject] = useState("");
+  const [favorites, setFavorites] = useState<string[]>([]);
+  const [description, setDescription] = useState(
+    props.arguments.description ?? "",
+  );
+  const [editing, setEditing] = useState(!props.arguments.description?.trim());
+  const [launchDefault, setLaunchDefault] = useState(true);
   const [descriptionError, setDescriptionError] = useState<string>();
   const [sending, setSending] = useState(false);
   const [result, setResult] = useState<Result>();
@@ -46,14 +58,13 @@ export default function Command() {
     setLoadError(undefined);
     async function load() {
       try {
-        const available = await createClient(apiToken).projects(abort.signal);
+        const [available, saved] = await Promise.all([
+          createClient(apiToken).projects(abort.signal),
+          LocalStorage.getItem<string>("favoriteProjects"),
+        ]);
         if (abort.signal.aborted) return;
         setProjects(available);
-        setProject((current) =>
-          available.some((p) => p.id === current)
-            ? current
-            : (available[0]?.id ?? ""),
-        );
+        setFavorites(readFavorites(saved));
       } catch (error) {
         if (!abort.signal.aborted)
           setLoadError(
@@ -80,7 +91,7 @@ export default function Command() {
     try {
       const ticket = await createClient(apiToken).createTicket({
         projectId: target.id,
-        title: values.title,
+        title: "",
         description: values.description,
         launchDefault: values.launchDefault,
       });
@@ -98,6 +109,26 @@ export default function Command() {
       }
     } finally {
       setSending(false);
+    }
+  }
+
+  const savingFavorite = useRef(false);
+  async function toggleFavorite(projectId: string) {
+    if (savingFavorite.current) return;
+    savingFavorite.current = true;
+    const next = favorites.includes(projectId)
+      ? favorites.filter((id) => id !== projectId)
+      : [...favorites, projectId];
+    try {
+      await LocalStorage.setItem("favoriteProjects", JSON.stringify(next));
+      setFavorites(next);
+    } catch {
+      await showToast({
+        style: Toast.Style.Failure,
+        title: "Could not save starred projects",
+      });
+    } finally {
+      savingFavorite.current = false;
     }
   }
 
@@ -168,76 +199,113 @@ export default function Command() {
       />
     );
 
-  const workspaces = [...new Set(projects.map((p) => p.workspace.id))];
-  return (
-    <Form
-      isLoading={loading || sending}
-      actions={
-        <ActionPanel>
-          {!loading && !sending && (
+  if (editing)
+    return (
+      <Form
+        actions={
+          <ActionPanel>
             <Action.SubmitForm
-              title="Create Ticket"
-              icon={Icon.Plus}
-              onSubmit={submit}
+              title="Choose Project"
+              onSubmit={(values: { description: string }) => {
+                if (!values.description.trim()) {
+                  setDescriptionError("Write a ticket first.");
+                  return;
+                }
+                setDescription(values.description);
+                setEditing(false);
+              }}
             />
-          )}
-          <Action
-            title="Open Extension Preferences"
-            icon={Icon.Gear}
-            onAction={openExtensionPreferences}
-          />
-        </ActionPanel>
-      }
-    >
-      <Form.Dropdown
-        id="project"
-        title="Project"
-        value={project}
-        onChange={setProject}
+          </ActionPanel>
+        }
       >
-        {workspaces.map((workspace) => (
-          <Form.Dropdown.Section
-            key={workspace}
-            title={
-              projects.find((p) => p.workspace.id === workspace)?.workspace.name
-            }
-          >
-            {projects
-              .filter((p) => p.workspace.id === workspace)
-              .map((p) => (
-                <Form.Dropdown.Item
-                  key={p.id}
-                  value={p.id}
-                  title={p.name || "Untitled project"}
+        <Form.TextArea
+          id="description"
+          title="Ticket"
+          defaultValue={description}
+          autoFocus
+          error={descriptionError}
+          onChange={() => setDescriptionError(undefined)}
+          placeholder="What should we work on?"
+        />
+      </Form>
+    );
+
+  function projectItem(project: Project) {
+    const starred = favorites.includes(project.id);
+    return (
+      <List.Item
+        key={project.id}
+        id={project.id}
+        title={project.name || "Untitled project"}
+        subtitle={project.workspace.name}
+        keywords={[project.workspace.name]}
+        icon={starred ? Icon.Star : Icon.Folder}
+        actions={
+          <ActionPanel>
+            <Action
+              title={sending ? "Creating Ticket…" : "Create Ticket"}
+              icon={Icon.Plus}
+              onAction={() =>
+                submit({ project: project.id, description, launchDefault })
+              }
+            />
+            {!sending && (
+              <>
+                <Action
+                  title={starred ? "Unstar Project" : "Star Project"}
+                  icon={starred ? Icon.StarDisabled : Icon.Star}
+                  shortcut={Keyboard.Shortcut.Common.Save}
+                  onAction={() => toggleFavorite(project.id)}
                 />
-              ))}
-          </Form.Dropdown.Section>
-        ))}
-      </Form.Dropdown>
-      <Form.TextField
-        id="title"
-        title="Title"
-        placeholder="Optional — Superconductor can write one"
+                <Action
+                  title="Edit Ticket"
+                  icon={Icon.Pencil}
+                  shortcut={Keyboard.Shortcut.Common.Edit}
+                  onAction={() => setEditing(true)}
+                />
+                <Action
+                  title={
+                    launchDefault
+                      ? "Create Without Implementation"
+                      : "Start Default Implementation"
+                  }
+                  icon={Icon.Bolt}
+                  shortcut={{ modifiers: ["cmd", "shift"], key: "i" }}
+                  onAction={() => setLaunchDefault((value) => !value)}
+                />
+              </>
+            )}
+          </ActionPanel>
+        }
       />
-      <Form.TextArea
-        id="description"
-        title="Description"
-        placeholder="What should this ticket accomplish? Markdown is supported."
-        error={descriptionError}
-        onChange={() => setDescriptionError(undefined)}
-        onBlur={(event) => {
-          if (!event.target.value?.trim())
-            setDescriptionError("Describe what the ticket should accomplish.");
-        }}
+    );
+  }
+
+  const { starred, other } = groupProjects(projects, favorites);
+  return (
+    <List
+      isLoading={loading || sending}
+      navigationTitle={`Ticket: ${description}`}
+      searchBarPlaceholder="Choose a project — type to filter"
+    >
+      <List.Section
+        title="Starred"
+        subtitle={
+          launchDefault ? "Starts default implementation" : "Ticket only"
+        }
+      >
+        {starred.map(projectItem)}
+      </List.Section>
+      <List.Section
+        title={starred.length ? "Other Projects" : "Projects"}
+        subtitle={starred.length ? undefined : "⌘S to star a project"}
+      >
+        {other.map(projectItem)}
+      </List.Section>
+      <List.EmptyView
+        title="No matching projects"
+        description="Try a different project or workspace name."
       />
-      <Form.Separator />
-      <Form.Checkbox
-        id="launchDefault"
-        label="Start default implementation"
-        defaultValue={true}
-        info="Start work immediately with the default coding agent configured for your Superconductor account."
-      />
-      <Form.Description text="Creating this ticket will send its description to the selected project. With the option above enabled, your default coding agent will start work." />
-    </Form>
+    </List>
   );
 }

@@ -11,7 +11,7 @@ Publish under the Superconductor Raycast organization, with an individual mainta
 ## Before submission
 
 1. Confirm author/owner metadata and official branding with the maintainers.
-2. Test the command in Raycast: token setup, multiple workspaces, optional title, implementation on/off, errors, and ticket opening.
+2. Test the command in Raycast: token setup, the `sc` alias and argument, project filtering and arrow navigation, starring across restarts, implementation on/off, errors, and ticket opening.
 3. Use Raycast's Capture Window command to create Store screenshots from a demonstration account/project. Do not publish real private ticket descriptions or credentials.
 4. Run `npm test`, `npm run typecheck`, `npm run lint`, and `npm run build`.
 5. Review all files being published, including screenshots and source assets.

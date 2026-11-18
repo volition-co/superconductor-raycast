@@ -6,9 +6,18 @@ The extension is in development and is not yet available in the Raycast Store. T
 
 ## Create Ticket
 
-Choose a project, enter a description, and optionally give the ticket a title. Leave the title blank to let Superconductor write one. **Start default implementation** is checked by default; turn it off to create the ticket without starting an agent.
+Set the command's alias to `sc` in Raycast Settings → Superconductor → Create Ticket.
 
-The result screen links to the ticket and distinguishes successful creation from an agent launch failure. Requests are never automatically retried. If the connection fails after submission, check the project before trying again—the ticket may already exist.
+1. Open Raycast, type `sc`, and press Tab.
+2. Type your ticket and press Enter.
+3. Choose a project with ↑/↓, or type to filter projects by name or workspace.
+4. Press Enter to create the ticket and start your default implementation.
+
+Press **⌘S** on a project to star or unstar it. Starred projects appear first, in the order you starred them, so your usual destination is ready when you open the list. These favorites are saved locally in Raycast.
+
+Use **⌘E** to edit the ticket before submitting. Use **⌘⇧I** to toggle whether to start the default implementation. Superconductor generates the ticket title from your description.
+
+The result screen links to the ticket and reports whether the implementation started. If the connection fails after submission, check the project before trying again—the ticket may already exist.
 
 ## Setup
 
