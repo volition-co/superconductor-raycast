@@ -12,9 +12,9 @@ Review the icon in Raycast's light and dark themes before release. The Supercond
 
 ## Store screenshots
 
-`metadata/superconductor-1.png` was saved by Raycast's built-in Capture Window
-command at 2000 × 1250 pixels. It shows Create Multiple Tickets with example
-Pokémon content.
+The three PNGs in `metadata/` were saved by Raycast's built-in Capture Window
+command at 2000 × 1250 pixels. They show multiple-ticket entry, the starred
+project picker, and launcher input with example Pokémon content.
 
 `screenshot-background.png` is a still rendered from the wave shader on the
 [Superconductor landing page](https://www.superconductor.com/), using its original
