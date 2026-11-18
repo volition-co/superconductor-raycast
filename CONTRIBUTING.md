@@ -21,7 +21,7 @@ npm run check
 
 This runs type checks, source lint, formatting checks, network-mocked tests, and the distribution build. CI runs the same command. Use `npm run format` to format changes.
 
-`npm run lint` also validates Store metadata and icons. It requires a real Raycast author handle; the current placeholder prevents that check from passing. See [PUBLISHING.md](PUBLISHING.md) for unresolved release work.
+`npm run lint` also validates Store metadata and icons. See [PUBLISHING.md](PUBLISHING.md) for the release checklist.
 
 ## Source layout
 
@@ -34,7 +34,6 @@ This runs type checks, source lint, formatting checks, network-mocked tests, and
 | `src/favorites.ts`                | Local favorite parsing and project ordering                                    |
 | `tests/`                          | API and favorite behavior with fake credentials and network responses          |
 | `assets/`                         | Bundled runtime icon                                                           |
-| `design/`                         | Editable icon source and export instructions                                   |
 | `help.md`                         | Token setup instructions displayed by Raycast                                  |
 
 Command filenames match the command names in `package.json`. Keep new code near the behavior it serves; add a hook or component when it has a clear responsibility, rather than creating layers for every function.

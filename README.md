@@ -66,4 +66,4 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for local development and checks, and [PU
 
 ## License
 
-Source code is [MIT licensed](LICENSE). The Superconductor name and logo remain their owners' trademarks. See [icon sources](design/README.md) for asset provenance.
+Source code is [MIT licensed](LICENSE). The Superconductor name and logo remain their owners' trademarks.
