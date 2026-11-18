@@ -1,5 +1,7 @@
 # Connect Superconductor
 
-Open [Superconductor](https://www.superconductor.com) and go to **Account Settings → Developer → Personal access tokens**. Create a token for Raycast and enter it in the password field.
+1. Open [Superconductor](https://www.superconductor.com) and go to **Account Settings → Developer → Personal access tokens**.
+2. Create a token for Raycast.
+3. Paste it into **Personal Access Token** to continue.
 
-Configure your default coding agent in Superconductor to use **Start default implementation**. You can turn that option off when creating a ticket.
+Both commands use this token. New tickets start your default implementation unless you turn that option off with **⌘⇧I**.

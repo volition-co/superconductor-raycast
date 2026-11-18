@@ -59,7 +59,8 @@
     "publish": "ray publish",
     "lint:source": "eslint src tests",
     "format:check": "prettier --check .",
-    "check": "npm run typecheck && npm run lint:source && npm run format:check && npm test && npm run build"
+    "check": "npm run typecheck && npm run lint:source && npm run format:check && npm test && npm run build",
+    "prepublishOnly": "node -e \"console.error('Use npm run publish to submit this extension to the Raycast Store.'); process.exit(1)\""
   },
   "dependencies": {
     "@raycast/api": "2.12.1",
