@@ -1,16 +1,12 @@
 # Publishing the official extension
 
-## Current status
+## Publisher setup
 
-This is a company-source extension prepared for local development. No Raycast Store submission has been made. GitHub publication and Raycast Store publication are separate steps.
+Publish under the Superconductor Raycast organization, with an individual maintainer credited as the author. Before the first submission, register the organization and update these fields in `package.json`:
 
-## Publisher identity
-
-- Confirm Kevin Gutowski's exact Raycast Store username. The manifest currently uses `kevingutowski` as an **unverified development value**, not a confirmed publisher identity.
-- Recommended publisher setup: establish a Superconductor Raycast organization, use its confirmed handle as `owner`, set `access` to `public`, and keep Kevin's confirmed personal handle as `author`. The organization does not exist yet; do not invent an owner handle in the manifest.
-- This follows [Linear's manifest](https://github.com/raycast/extensions/blob/main/extensions/linear/package.json): `owner: linear`, `author: thomaslombart`, `access: public`. Its [Store listing](https://www.raycast.com/linear/linear) displays Linear as publisher. GitHub repository ownership remains independent.
-- Raycast documents an `owner` organization handle and an `access` field. If using an organization for a public extension, set `access` to `public` explicitly; an owner without public access defaults to private distribution. Verify the current organization onboarding and publishing flow with Raycast before submission.
-- Company ownership of this GitHub repository establishes where the source is maintained. It does not itself create a Raycast organization, a Store listing, a partner relationship, or a verified badge.
+- `owner`: the Superconductor organization's Raycast handle.
+- `author`: the submitting maintainer's Raycast username. The current value, `kevingutowski`, is a placeholder and must be verified or replaced.
+- `access`: `public`, so the extension is available in the Store.
 
 ## Before submission
 
@@ -30,10 +26,8 @@ After Store contributions land, use Raycast's documented pull-contributions work
 - [Manifest fields](https://developers.raycast.com/information/manifest)
 - [Security and password preferences](https://developers.raycast.com/information/security)
 
-API scope intentionally excludes chat creation: the inspected API documents reading/messaging existing chats, but no create-chat endpoint. Search and following are future features once the API supports them; this release does not depend on them.
-
 ## Known release checks
 
-As of November 17, 2026, source lint, formatting, type checks, six API tests, and the production build pass. Full `ray lint` is blocked by the unconfirmed author handle. The command still needs an authenticated manual run in Raycast before Store submission.
+Before the first release, configure the publisher metadata and test ticket creation in Raycast with a Superconductor account. Full `ray lint` requires a valid author handle; CI currently checks source lint separately.
 
-`npm audit` reports a high-severity picomatch ReDoS advisory ([GHSA-fc5q-39xc-vjpf](https://github.com/advisories/GHSA-fc5q-39xc-vjpf)) through Raycast CLI and lint dependencies. The registry's latest picomatch version is currently affected; the suggested automatic fix downgrades the Raycast SDK across a major version. Recheck upstream fixes before release. Ticket input is not passed to these glob utilities. CI checks source lint separately from publisher metadata until the author account is confirmed.
+On November 17, 2026, `npm audit` reported a high-severity picomatch ReDoS advisory ([GHSA-fc5q-39xc-vjpf](https://github.com/advisories/GHSA-fc5q-39xc-vjpf)) through Raycast CLI and lint dependencies. The latest picomatch version available on that date was affected; the suggested automatic fix downgrades the Raycast SDK across a major version. Recheck upstream fixes before release. Ticket input is not passed to these glob utilities.

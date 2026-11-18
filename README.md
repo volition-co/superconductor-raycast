@@ -2,15 +2,13 @@
 
 Create a Superconductor ticket and start your default coding agent from Raycast.
 
-Developed for Superconductor. This repository is the source project; the extension has **not yet been submitted to or published in the Raycast Store**.
+The extension is in development and is not yet available in the Raycast Store. To try it locally, follow the development instructions below.
 
 ## Create Ticket
 
 Choose a project, enter a description, and optionally give the ticket a title. Leave the title blank to let Superconductor write one. **Start default implementation** is checked by default; turn it off to create the ticket without starting an agent.
 
 The result screen links to the ticket and distinguishes successful creation from an agent launch failure. Requests are never automatically retried. If the connection fails after submission, check the project before trying again—the ticket may already exist.
-
-This release creates text tickets only. It does not create chats or search existing work.
 
 ## Setup
 
@@ -43,9 +41,7 @@ Tests use fake credentials and mocked network responses; they do not create prod
 
 ## Data and authentication
 
-Requests go directly to `https://www.superconductor.com/api/v1`. The extension uses Raycast's encrypted password preference for the token. It does not read the separate API-helper Keychain credential, log tokens, add analytics, cache conversations, or retain ticket history. Project metadata and form values are held in memory for the command's lifetime. There is no automatic background polling.
-
-The client follows project pagination and normalizes the API response to selected fields. Redirects are rejected. Ticket creation makes one POST, and an uncertain response leads to a check-project screen rather than an automatic retry.
+Your API token is stored in Raycast's encrypted preferences. The extension connects directly to Superconductor to load your projects and create tickets. Tickets are saved in Superconductor; the extension keeps no local ticket history.
 
 ## Publishing and maintenance
 
