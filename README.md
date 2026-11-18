@@ -32,7 +32,7 @@ Your implementation setting stays the same for the session. Use **⌘⇧I** to t
 3. Enter it in the extension's **Personal Access Token** password preference.
 4. Make sure your Superconductor account has a default coding agent configured if you want implementations to start immediately.
 
-The extension acts as the token's user and only lists projects that account can access. Project choices are grouped by workspace.
+The extension acts as the token's user and only lists projects that account can access. Each project shows its workspace to help distinguish similar names.
 
 ## Develop
 
@@ -46,13 +46,12 @@ npm run dev
 Raycast imports the extension in development mode. Configure your token through Raycast's preferences, never in source files or environment files.
 
 ```sh
-npm test
-npm run typecheck
-npm run lint
-npm run build
+npm run check
 ```
 
-Tests use fake credentials and mocked network responses; they do not create production tickets. To test submission manually, use a designated project and disable the implementation checkbox unless you intend to start an agent.
+`npm run check` runs type checks, source lint, formatting checks, tests, and the distribution build. Store validation (`npm run lint`) additionally requires a valid Raycast author handle.
+
+Tests use fake credentials and mocked network responses; they do not create production tickets. To test submission manually, use a designated project and turn off implementation launch with ⌘⇧I unless you intend to start an agent.
 
 ## Data and authentication
 

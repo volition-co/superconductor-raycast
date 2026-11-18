@@ -1,6 +1,5 @@
-import type { LaunchProps } from "@raycast/api";
-import CreateTicket from "./create-ticket";
+import TicketComposer from "./components/TicketComposer";
 
-export default function CreateMultipleTickets(props: LaunchProps) {
-  return <CreateTicket {...props} arguments={{}} repeat />;
+export default function CreateMultipleTickets() {
+  return <TicketComposer mode="multiple" />;
 }
