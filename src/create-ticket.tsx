@@ -12,6 +12,9 @@ import {
   showToast,
   Toast,
   Keyboard,
+  open,
+  closeMainWindow,
+  PopToRootType,
 } from "@raycast/api";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -88,14 +91,14 @@ export default function Command(
     }
     submitted.current = true;
     setSending(true);
+    let ticket: CreatedTicket;
     try {
-      const ticket = await createClient(apiToken).createTicket({
+      ticket = await createClient(apiToken).createTicket({
         projectId: target.id,
         title: "",
         description: values.description,
         launchDefault: values.launchDefault,
       });
-      setResult({ ticket, launchDefault: values.launchDefault });
     } catch (error) {
       if (error instanceof UnknownCreateOutcome) {
         setResult({ unknown: true, projectUrl: target.url });
@@ -107,8 +110,25 @@ export default function Command(
           message: error instanceof Error ? error.message : "Please try again.",
         });
       }
+      return;
     } finally {
       setSending(false);
+    }
+
+    // A browser failure must never turn a successful create into a retry.
+    try {
+      await open(ticket.url);
+      await closeMainWindow({
+        clearRootSearch: true,
+        popToRootType: PopToRootType.Immediate,
+      });
+    } catch {
+      setResult({ ticket, launchDefault: values.launchDefault });
+      await showToast({
+        style: Toast.Style.Failure,
+        title: "Ticket created — open it below",
+        message: "Could not finish opening the ticket in your browser.",
+      });
     }
   }
 
