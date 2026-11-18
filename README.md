@@ -4,9 +4,9 @@ Create a Superconductor ticket and start your default coding agent from Raycast.
 
 The extension is in development and is not yet available in the Raycast Store. To try it locally, follow the development instructions below.
 
-## Create Ticket
+## Create a Ticket
 
-Set the command's alias to `sc` in Raycast Settings → Superconductor → Create Ticket.
+Set the command's alias to `sc` in Raycast Settings → Superconductor → Create a Ticket.
 
 1. Open Raycast, type `sc`, and press Tab.
 2. Type your ticket and press Enter.
@@ -18,6 +18,12 @@ Press **⌘S** on a project to star or unstar it. Starred projects appear first,
 Use **⌘E** to edit the ticket before submitting. Use **⌘⇧I** to toggle whether to start the default implementation. Superconductor generates the ticket title from your description.
 
 After creation, the ticket opens automatically in your default browser and Raycast closes. Check the ticket for implementation status. If the connection fails after submission, check the project before trying again—the ticket may already exist.
+
+## Create Multiple Tickets
+
+Run **Create Multiple Tickets** and choose a project. Type a ticket, then press Enter. After successful creation, the input clears so you can write the next ticket in the same project. Raycast stays open.
+
+Your implementation setting stays the same for the session. Use **⌘⇧I** to toggle it, **⌘⇧P** to change projects, or **⌘O** to open the last created ticket. If creation cannot be confirmed, the command stops and asks you to check the project before trying again.
 
 ## Setup
 

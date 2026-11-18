@@ -16,7 +16,7 @@
   "commands": [
     {
       "name": "create-ticket",
-      "title": "Create Ticket",
+      "title": "Create a Ticket",
       "subtitle": "Superconductor",
       "description": "Create a ticket in a project and optionally start your default implementation.",
       "mode": "view",
@@ -31,6 +31,13 @@
       "keywords": [
         "sc"
       ]
+    },
+    {
+      "name": "create-multiple-tickets",
+      "title": "Create Multiple Tickets",
+      "subtitle": "Superconductor",
+      "description": "Choose a project once and keep creating tickets without leaving Raycast.",
+      "mode": "view"
     }
   ],
   "preferences": [

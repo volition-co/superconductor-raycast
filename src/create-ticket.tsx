@@ -37,7 +37,9 @@ type Result =
   | { unknown: true; projectUrl: string };
 
 export default function Command(
-  props: LaunchProps<{ arguments: { description?: string } }>,
+  props: LaunchProps<{ arguments: { description?: string } }> & {
+    repeat?: boolean;
+  },
 ) {
   const { apiToken } = getPreferenceValues<{ apiToken: string }>();
   const [projects, setProjects] = useState<Project[]>([]);
@@ -48,7 +50,11 @@ export default function Command(
   const [description, setDescription] = useState(
     props.arguments.description ?? "",
   );
-  const [editing, setEditing] = useState(!props.arguments.description?.trim());
+  const [editing, setEditing] = useState(
+    !props.repeat && !props.arguments.description?.trim(),
+  );
+  const [batchProject, setBatchProject] = useState<Project>();
+  const [lastTicket, setLastTicket] = useState<CreatedTicket>();
   const [launchDefault, setLaunchDefault] = useState(true);
   const [descriptionError, setDescriptionError] = useState<string>();
   const [sending, setSending] = useState(false);
@@ -87,6 +93,10 @@ export default function Command(
     if (!target) return;
     if (!values.description.trim()) {
       setDescriptionError("Describe what the ticket should accomplish.");
+      await showToast({
+        style: Toast.Style.Failure,
+        title: "Write a ticket first",
+      });
       return;
     }
     submitted.current = true;
@@ -113,6 +123,27 @@ export default function Command(
       return;
     } finally {
       setSending(false);
+    }
+
+    if (props.repeat) {
+      setLastTicket(ticket);
+      setDescription("");
+      submitted.current = false;
+      const outcome = launchOutcome(ticket, values.launchDefault);
+      await showToast({
+        style:
+          outcome === "failed" || outcome === "unknown"
+            ? Toast.Style.Failure
+            : Toast.Style.Success,
+        title: `Ticket #${ticket.friendly_id} created`,
+        message:
+          outcome === "failed"
+            ? "Implementation could not start. Open the last ticket to check."
+            : outcome === "unknown"
+              ? "Implementation status is unconfirmed. Open the last ticket to check."
+              : "Ready for the next ticket.",
+      });
+      return;
     }
 
     // A browser failure must never turn a successful create into a retry.
@@ -219,6 +250,71 @@ export default function Command(
       />
     );
 
+  if (props.repeat && batchProject)
+    return (
+      <List
+        isLoading={sending}
+        navigationTitle={`Create Multiple Tickets · ${batchProject.name || "Untitled project"}`}
+        searchBarPlaceholder="Write a ticket, then press Enter"
+        searchText={description}
+        onSearchTextChange={(value) => {
+          if (!submitted.current) setDescription(value);
+        }}
+        filtering={false}
+      >
+        <List.Item
+          title={batchProject.name || "Untitled project"}
+          subtitle={batchProject.workspace.name}
+          icon={Icon.Plus}
+          accessories={[
+            { text: launchDefault ? "Start implementation" : "Ticket only" },
+          ]}
+          actions={
+            <ActionPanel>
+              <Action
+                title={sending ? "Creating Ticket…" : "Create Ticket"}
+                icon={Icon.Plus}
+                onAction={() =>
+                  submit({
+                    project: batchProject.id,
+                    description,
+                    launchDefault,
+                  })
+                }
+              />
+              {!sending && (
+                <>
+                  <Action
+                    title="Change Project"
+                    icon={Icon.Folder}
+                    shortcut={{ modifiers: ["cmd", "shift"], key: "p" }}
+                    onAction={() => setBatchProject(undefined)}
+                  />
+                  <Action
+                    title={
+                      launchDefault
+                        ? "Create Without Implementation"
+                        : "Start Default Implementation"
+                    }
+                    icon={Icon.Bolt}
+                    shortcut={{ modifiers: ["cmd", "shift"], key: "i" }}
+                    onAction={() => setLaunchDefault((value) => !value)}
+                  />
+                </>
+              )}
+              {lastTicket && (
+                <Action.OpenInBrowser
+                  title="Open Last Ticket"
+                  url={lastTicket.url}
+                  shortcut={Keyboard.Shortcut.Common.Open}
+                />
+              )}
+            </ActionPanel>
+          }
+        />
+      </List>
+    );
+
   if (editing)
     return (
       <Form
@@ -263,10 +359,18 @@ export default function Command(
         actions={
           <ActionPanel>
             <Action
-              title={sending ? "Creating Ticket…" : "Create Ticket"}
+              title={
+                props.repeat
+                  ? "Choose Project"
+                  : sending
+                    ? "Creating Ticket…"
+                    : "Create Ticket"
+              }
               icon={Icon.Plus}
               onAction={() =>
-                submit({ project: project.id, description, launchDefault })
+                props.repeat
+                  ? setBatchProject(project)
+                  : submit({ project: project.id, description, launchDefault })
               }
             />
             {!sending && (
@@ -277,12 +381,14 @@ export default function Command(
                   shortcut={Keyboard.Shortcut.Common.Save}
                   onAction={() => toggleFavorite(project.id)}
                 />
-                <Action
-                  title="Edit Ticket"
-                  icon={Icon.Pencil}
-                  shortcut={Keyboard.Shortcut.Common.Edit}
-                  onAction={() => setEditing(true)}
-                />
+                {!props.repeat && (
+                  <Action
+                    title="Edit Ticket"
+                    icon={Icon.Pencil}
+                    shortcut={Keyboard.Shortcut.Common.Edit}
+                    onAction={() => setEditing(true)}
+                  />
+                )}
                 <Action
                   title={
                     launchDefault
@@ -305,7 +411,9 @@ export default function Command(
   return (
     <List
       isLoading={loading || sending}
-      navigationTitle={`Ticket: ${description}`}
+      navigationTitle={
+        props.repeat ? "Create Multiple Tickets" : `Ticket: ${description}`
+      }
       searchBarPlaceholder="Choose a project — type to filter"
     >
       <List.Section

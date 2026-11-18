@@ -2,6 +2,8 @@
 
 ## [Initial Release] - {PR_MERGE_DATE}
 
+- Add Create Multiple Tickets to keep creating tickets in one project.
+
 - Write a ticket in the launcher, then search or navigate projects with the arrow keys.
 - Star projects locally to keep frequent destinations at the top.
 - Generate ticket titles automatically from the description.
