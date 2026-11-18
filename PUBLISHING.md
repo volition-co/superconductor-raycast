@@ -7,7 +7,8 @@ This is a company-source extension prepared for local development. No Raycast St
 ## Publisher identity
 
 - Confirm Kevin Gutowski's exact Raycast Store username. The manifest currently uses `kevingutowski` as an **unverified development value**, not a confirmed publisher identity.
-- Superconductor does not yet have a Raycast organization. Decide whether to submit under the confirmed personal author or establish a company organization for maintainership.
+- Recommended publisher setup: establish a Superconductor Raycast organization, use its confirmed handle as `owner`, set `access` to `public`, and keep Kevin's confirmed personal handle as `author`. The organization does not exist yet; do not invent an owner handle in the manifest.
+- This follows [Linear's manifest](https://github.com/raycast/extensions/blob/main/extensions/linear/package.json): `owner: linear`, `author: thomaslombart`, `access: public`. Its [Store listing](https://www.raycast.com/linear/linear) displays Linear as publisher. GitHub repository ownership remains independent.
 - Raycast documents an `owner` organization handle and an `access` field. If using an organization for a public extension, set `access` to `public` explicitly; an owner without public access defaults to private distribution. Verify the current organization onboarding and publishing flow with Raycast before submission.
 - Company ownership of this GitHub repository establishes where the source is maintained. It does not itself create a Raycast organization, a Store listing, a partner relationship, or a verified badge.
 
